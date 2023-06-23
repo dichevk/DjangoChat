@@ -24,10 +24,19 @@ class ChatUserManager(UserManager):
         return self._create_user(name, email, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
+
+    REGULAR = 'regular'
+    MANAGER = 'manager'
+
+    ROLES_CHOICES = (
+        (REGULAR, 'Regular'),
+        (MANAGER, 'Manager'),
+    )
+
     id = models.UUIDField
     email = models.EmailField(unique=True)
     name = models.CharField(default='')
-    role = models.CharField()
+    role = models.CharField(choices=ROLES_CHOICES, )
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
