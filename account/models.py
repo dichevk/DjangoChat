@@ -25,6 +25,10 @@ class ChatUserManager(UserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
+
     REGULAR = 'regular'
     MANAGER = 'manager'
 
@@ -35,8 +39,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     id = models.UUIDField
     email = models.EmailField(unique=True)
-    name = models.CharField(default='')
-    role = models.CharField(choices=ROLES_CHOICES, )
+    name = models.CharField(max_length=255, default='')
+    role = models.CharField(max_length=20, choices=ROLES_CHOICES, )
 
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
