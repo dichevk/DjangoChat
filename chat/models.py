@@ -15,9 +15,20 @@ class Message(models.Model):
         return f'{self.sent_by}'
     
 class Room(models.Model):
+    WAITING = 'waiting'
+    ACTIVE = 'active'
+    CLOSED = 'closed'
+
+    CHOICES_STATUS = {
+        {WAITING, 'waiting'},
+        {ACTIVE, 'active'},
+        {CLOSED, 'closed'}
+    }
+
     uuid = models.CharField(max_length=255)
     client = models.CharField(max_length=255)
     agent = models.ForeignKey(User, related_name="rooms")
     messages = models.ManyToManyField(Message, blank=True)
     url = models.CharField(max_length=255)
-
+    status = models.CharField(max_length=20, choices=CHOICES_STATUS)
+    
