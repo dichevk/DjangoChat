@@ -13,3 +13,11 @@ class Message(models.Model):
 
     def __str__(self):
         return f'{self.sent_by}'
+    
+class Room(models.Model):
+    uuid = models.CharField(max_length=255)
+    client = models.CharField(max_length=255)
+    agent = models.ForeignKey(User, related_name="rooms")
+    messages = models.ManyToManyField(Message, blank=True)
+    url = models.CharField(max_length=255)
+
