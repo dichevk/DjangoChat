@@ -1,0 +1,11 @@
+#!/bin/bash
+
+DJANGODIR=/webapps/chat/chat
+DJANGO_SETTINGS_MODULE=chat.settingsprod
+
+cd $DJANGODIR
+source ../env/bin/activate
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DJANGODIR:$PYTHONPATH
+
+daphne -b 0.0.0.0 -p 8002 chat.asgi:application
