@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Room
 from account.models import User
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
 
 @require_POST
 def create_room(request, uuid):
@@ -37,7 +39,17 @@ def room(request, uuid):
 
 @login_required
 def delete_room(request, uuid):
-    pass
+    if request.user.has_perm('room.delete_room'):
+        room = Room.objects.get(uuid=uuid)
+        room.delete()
+                
+        messages.success(request, 'The room was deleted!')
+
+        return redirect('/chat-admin/')
+    else:
+        messages.error(request, 'You don\'t have access to delete rooms!')
+
+        return redirect('/chat-admin/')
 @login_required
 def user_detail(request, uuid):
     pass
