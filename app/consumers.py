@@ -1,5 +1,5 @@
 import json 
-
+from account.models import User
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Room, Message
@@ -62,8 +62,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room = Room.objects.get(uuid = self.room_name)
 
     @sync_to_async
-    def create_message(self, sent_by, message):
+    def create_message(self, sent_by, message, agent):
         message = Message.objects.create(body = message, sent_by=sent_by)
-    
+        if agent:
+            message.created_by = User.objects.get(pk=agent)
+            message.save()
+        
+        self.room.messages.add(message)
+
+        return message
 
     

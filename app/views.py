@@ -23,6 +23,7 @@ def admin(request):
         'users': users
     })
 
+
 @login_required
 def room(request, uuid):
     room = Room.objects.get(uuid=uuid)
