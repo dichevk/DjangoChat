@@ -45,14 +45,20 @@ def delete_room(request, uuid):
                 
         messages.success(request, 'The room was deleted!')
 
-        return redirect('/chat-admin/')
+        return redirect('/app-admin/')
     else:
         messages.error(request, 'You don\'t have access to delete rooms!')
 
-        return redirect('/chat-admin/')
+        return redirect('/app-admin/')
 @login_required
 def user_detail(request, uuid):
-    pass
+    user = User.objects.get(pk=uuid)
+    rooms = user.rooms.all()
+
+    return render(request, 'app/user_detail.html', {
+        'user': user,
+        'rooms': rooms
+    })
 @login_required
 def edit_user(request, uuid):
     pass
