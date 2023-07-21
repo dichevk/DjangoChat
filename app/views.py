@@ -5,6 +5,7 @@ from account.models import User
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from account.forms import EditUserForm
 
 
 @require_POST
@@ -61,7 +62,29 @@ def user_detail(request, uuid):
     })
 @login_required
 def edit_user(request, uuid):
-    pass
+    if request.user.has_perm('user.edit_user'):
+        user = User.objects.get(pk=uuid)
+
+        if request.method == 'POST':
+            form = EditUserForm(request.POST, instance=user)
+
+            if form.is_valid():
+                form.save()
+                
+                messages.success(request, 'The changes was saved!')
+
+                return redirect('/chat-admin/')
+        else:
+            form = EditUserForm(instance=user)
+
+        return render(request, 'chat/edit_user.html', {
+            'user': user,
+            'form': form
+        })
+    else:
+        messages.error(request, 'You don\'t have access to edit users!')
+
+        return redirect('/chat-admin/')
 @login_required
 def add_user(request):
     pass
