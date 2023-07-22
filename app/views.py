@@ -5,7 +5,7 @@ from account.models import User
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from account.forms import EditUserForm
+from account.forms import EditUserForm, AddUserForm
 
 
 @require_POST
@@ -85,6 +85,29 @@ def edit_user(request, uuid):
         messages.error(request, 'You don\'t have access to edit users!')
 
         return redirect('/chat-admin/')
+        
 @login_required
 def add_user(request):
-    pass
+    if request.user.has_perm('user.add_user'):
+        if request.method == "POST":
+            form = AddUserForm(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = True
+            user.set_password(request.POST.get('password'))
+            user.save()
+            messages.success(request=request,message="User successfully added")
+            return redirect('/app-admin')
+        
+        else: 
+            form = AddUserForm()
+
+        return render(request=request, template_name='app/add_user.html', context={'form':form}) 
+    
+    else: 
+        messages.error(request=request, message="Access denied")
+        
+        return redirect(
+            '/app-admin/'
+        )
