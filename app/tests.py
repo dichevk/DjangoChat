@@ -56,6 +56,14 @@ class EditUserTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  # 302 is the redirect status code
         self.assertEqual(response.url, '/chat-admin/')
         self.assertContains(response, 'You don\'t have access to edit users!')
+        
+    def test_edit_user_invalid_form(self):
+        self.client.login(username='user_with_perm', password='testpassword')
+        form_data = {'username': '', 'email': 'invalid_email'}  # Invalid form data
+        response = self.client.post(reverse('edit_user', args=[self.user_to_edit.pk]), data=form_data)
+        self.assertEqual(response.status_code, 200)  # 200 is the status code for form validation error
+        self.assertContains(response, 'This field is required.')  # Check if form validation error message is shown
+        self.assertNotEqual(User.objects.get(pk=self.user_to_edit.pk).email, 'invalid_email')  # No change due to invalid data
 
 class AddUserTestCase(TestCase):
     def setUp(self):
