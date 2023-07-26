@@ -102,3 +102,11 @@ class AddUserTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  # 302 is the redirect status code
         self.assertEqual(response.url, '/app-admin/')
         self.assertContains(response, 'Access denied')
+
+    def test_add_user_duplicate_username(self):
+        self.client.login(username='user_with_perm', password='testpassword')
+        form_data = {'username': 'existing_user', 'email': 'new_user@example.com', 'password': 'password123'}
+        response = self.client.post(reverse('add_user'), data=form_data)
+        self.assertEqual(response.status_code, 200)  # 200 is the status code for form validation error
+        self.assertContains(response, 'A user with that username already exists.')  # Check if form validation error message is shown
+        self.assertIsNone(User.objects.filter(username='existing_user').first())  # No new user created
